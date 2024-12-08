@@ -26,7 +26,7 @@ const client = new MongoClient(uri, {
 async function run() {
   try {
     // Connect the client to the server	(optional starting in v4.7)
-    await client.connect();
+    // await client.connect();
 
     const visaCollection = client.db("Visa-Agency").collection("Visa");
     const userCollection = client.db('Visa-Agency').collection("User")
@@ -52,7 +52,7 @@ async function run() {
     app.get('/my_visa/:id', async (req, res) => {
       const id = req.params.id
       const query = { userUid: id }
-      console.log(id)
+      // console.log(id)
       const cursor = visaCollection.find(query)
       const result = await cursor.toArray()
 
@@ -84,7 +84,7 @@ async function run() {
       // console.log(id, data)
       const result= await visaCollection.updateOne(filter, updatedDoc, options)
       res.send(result)
-      console.log(result)
+      // console.log(result)
     })
 
     app.post('/apply_visa', async (req, res)=>{
@@ -100,11 +100,11 @@ async function run() {
       const cursor = userCollection.find(query)
       const result = await cursor.toArray()
       const visaQueryIds= result.map(d=>new ObjectId(d.visaId))
-      console.log(id);
+      // console.log(id);
       const queryForVisa = { _id:  { $in: visaQueryIds }  }
       const cursorForVisa =await visaCollection.find(queryForVisa).toArray()
       const sendData={result, cursorForVisa}
-      console.log(visaQueryIds, cursorForVisa)
+      // console.log(visaQueryIds, cursorForVisa)
       res.send(sendData)
     })
 
@@ -117,8 +117,8 @@ async function run() {
 
 
     // Send a ping to confirm a successful connection
-    await client.db("admin").command({ ping: 1 });
-    console.log("Pinged your deployment. You successfully connected to MongoDB!");
+    // await client.db("admin").command({ ping: 1 });
+    // console.log("Pinged your deployment. You successfully connected to MongoDB!");
 
 
 
