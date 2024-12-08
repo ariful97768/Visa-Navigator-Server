@@ -52,6 +52,7 @@ async function run() {
     app.get('/my_visa/:id', async (req, res) => {
       const id = req.params.id
       const query = { userUid: id }
+      console.log(id)
       const cursor = visaCollection.find(query)
       const result = await cursor.toArray()
 
@@ -73,17 +74,45 @@ async function run() {
       const filter={_id:new ObjectId(id)}
       const options= {upsert: true}
       const data= req.body
-      const { userUid, name, image, processingTime, ageRestriction, fee, validity, applicationMethod, description, newVisaType, newRequiredDoc
+      const { userUid, name, image, processingTime, ageRestriction, fee, validity, applicationMethod, description, visaType, requiredDoc
     } = data
       const updatedDoc={
         $set:{
-          userUid, name, image, processingTime, ageRestriction, fee, validity, applicationMethod, description, visaType:newVisaType,requiredDoc: newRequiredDoc
+          userUid, name, image, processingTime, ageRestriction, fee, validity, applicationMethod, description, visaType,requiredDoc
         }
       }
       // console.log(id, data)
       const result= await visaCollection.updateOne(filter, updatedDoc, options)
       res.send(result)
       console.log(result)
+    })
+
+    app.post('/apply_visa', async (req, res)=>{
+      const data= req.body
+      const result= await userCollection.insertOne(data)
+      // console.log(data)
+      res.send(result)
+    })
+
+    app.get('/applied_visa/:id',async (req, res)=>{
+      const id= req.params.id
+      const query = { userUid: id }
+      const cursor = userCollection.find(query)
+      const result = await cursor.toArray()
+      const visaQueryIds= result.map(d=>new ObjectId(d.visaId))
+      console.log(id);
+      const queryForVisa = { _id:  { $in: visaQueryIds }  }
+      const cursorForVisa =await visaCollection.find(queryForVisa).toArray()
+      const sendData={result, cursorForVisa}
+      console.log(visaQueryIds, cursorForVisa)
+      res.send(sendData)
+    })
+
+    app.delete('/delete_visa/:id', async(req, res)=>{
+      const id= req.params.id
+      const query = { _id: new ObjectId(id) }
+      const result = await userCollection.deleteOne(query)
+      res.send(result)
     })
 
 
