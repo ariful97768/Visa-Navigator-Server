@@ -65,6 +65,27 @@ async function run() {
       res.send(result)
     })
 
+    // const { ageRestriction, applicationMethod, description, fee, image, name, processingTime, requiredDoc, validity, visaType, _id } = updatedData
+
+
+    app.put('/update_visa/:id', async(req,res)=>{
+      const id= req.params.id
+      const filter={_id:new ObjectId(id)}
+      const options= {upsert: true}
+      const data= req.body
+      const { userUid, name, image, processingTime, ageRestriction, fee, validity, applicationMethod, description, newVisaType, newRequiredDoc
+    } = data
+      const updatedDoc={
+        $set:{
+          userUid, name, image, processingTime, ageRestriction, fee, validity, applicationMethod, description, visaType:newVisaType,requiredDoc: newRequiredDoc
+        }
+      }
+      // console.log(id, data)
+      const result= await visaCollection.updateOne(filter, updatedDoc, options)
+      res.send(result)
+      console.log(result)
+    })
+
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
